@@ -2,4 +2,9 @@
 
 {<body}
     <h1>{@pre type="content" key="greeting"/}</h1>
+
+    <form method="post">
+        <input type="hidden" name="key1" value="data1">
+        <input type="submit" name="submit1" value="go">
+    </form>
 {/body}

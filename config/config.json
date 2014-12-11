@@ -23,14 +23,14 @@
             }
         }
     },
-    
+
 
     "i18n": {
         "contentPath": "path:./locales",
         "fallback": "en-US"
     },
-    
-    
+
+
 
     "middleware": {
 
@@ -46,7 +46,7 @@
             }
         },
 
-        
+
         "expressView": {
             "priority": 100,
             "enabled": true,
@@ -54,7 +54,22 @@
                 "name": "engine-munger/lib/expressView"
             }
         },
-        
+
+        /**
+       * Override default lusca configuration to disable CSRF handling. (See below.)
+       */
+        "appsec": {
+            "module": {
+                "arguments": [
+                    {
+                        "xframe": "SAMEORIGIN",
+                        "p3p": false,
+                        "csp": false
+                    }
+                ]
+            }
+        },
+
 
         "fileNotFound": {
             "enabled": true,
