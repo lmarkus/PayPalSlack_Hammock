@@ -63,7 +63,7 @@
 				);
 			}
 
-			$this->sendMessage("HOOK!!!" . $this->escapeText($req['post']['a']));
+			$this->sendMessage("HOOK!!! \n" . $this->escapeText(http_build_query($req['post'])));
 			//$this->sendMessage());
 			return array(
 				'ok'		=> true,
