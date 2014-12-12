@@ -81,7 +81,7 @@ require __DIR__ . '/vendor/paypal/rest-api-sdk-php/sample/invoice/CreateInvoice.
 
 			$invoice['note']= $note;
 
-			printf($invoice);
+			$this->sendMessage("Hi ".$invoice['from'].". I'm going to request $".$invoice['amount']." from ".$invoice['to']." for:\n".$note);
 
 
 
