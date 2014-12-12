@@ -22,17 +22,20 @@ require __DIR__ . '/common.php';
 use PayPal\Rest\ApiContext;
 use PayPal\Auth\OAuthTokenCredential;
 
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
+#error_reporting(E_ALL);
+#ini_set('display_errors', '1');
 
 // Replace these values by entering your own ClientId and Secret by visiting https://developer.paypal.com/webapps/developer/applications/myapps
 $clientId = 'AYSq3RDGsmBLJE-otTkBtM-jBRd1TCQwFf9RGfwddNXWz0uFU9ztymylOhRS';
 $clientSecret = 'EGnHDxD_qRPdaLdZz8iCr8N7_MzF-YHPTkjs6NKYQvQSBngp4PTTVWkPZRbL';
 
-/** @var \Paypal\Rest\ApiContext $apiContext */
-$apiContext = getApiContext($clientId, $clientSecret);
+$clientId = 'AVc27xDn4TOP7CLg2qkQWPiaWpzphQHW2W0eyC4GinmD8PHxYZaJteWOKW9m';
+$clientSecret = 'EAjbuhD6IW3uMlKxN1EiI_VWoJZ0WW36dlE-oTg97yguFa4ZJoLuUQe5kbvG';
 
-return $apiContext;
+/** @var \Paypal\Rest\ApiContext $apiContext */
+//$apiContext = getApiContext($clientId, $clientSecret);
+
+//return $apiContext;
 /**
  * Helper method for getting an APIContext for all calls
  *
@@ -66,7 +69,7 @@ function getApiContext($clientId, $clientSecret)
             'mode' => 'sandbox',
             'http.ConnectionTimeOut' => 30,
             'log.LogEnabled' => true,
-            'log.FileName' => '../PayPal.log',
+            'log.FileName' => 'PayPal.log',
             'log.LogLevel' => 'FINE',
             'validation.level' => 'log'
         )

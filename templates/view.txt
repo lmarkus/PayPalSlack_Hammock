@@ -14,9 +14,9 @@ Your current configuration is below:</p>
 
 <fieldset>
 <legend>PayPal API Credentials</legend>
-<p><label>API Username:</label> <span>{$this->icfg.pp_usr|escape}<span></p>
-<p><label>API Password:</label> <span>Hidden<span></p>
-<p><label>API Signature:</label> <span>Hidden<span></p>
+<p><label>PayPal Email:</label> <span>{$this->icfg.pp_act|escape}</span></p>
+<p><label>API ClientID:</label> <span>{$this->icfg.pp_cid|escape}</span></p>
+<p><label>API Secret:</label> <span>{$this->icfg.pp_pwd|escape}</span></p>
 </fieldset>
 
 <fieldset>

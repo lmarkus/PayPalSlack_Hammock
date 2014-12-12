@@ -21,9 +21,9 @@ function popitup(url) {
 <span class="pp_tiny">
 	Click here to <a href="javascript:void(0)" onclick="popitup('https://www.paypal.com/us/cgi-bin/webscr?cmd=_get-api-signature')"> obtain your API credentials</a>
 </span>
-<p><label for="pp_usr">API Username:</label> <input name="pp_usr" value="{$this->icfg.pp_usr|escape}" type="text"></p>
-<p><label for="pp_pwd">API Password:</label> <input name="pp_pwd" value="{$this->icfg.pp_pwd|escape}" type="password"></p>
-<p><label for="pp_sig">API Signature:</label> <input name="pp_sig" value="{$this->icfg.pp_sig|escape}" type="password"></p>
+<p><label for="pp_act">PayPal Email:</label> <input name="pp_act" value="{$this->icfg.pp_act|escape}" type="text"></p>
+<p><label for="pp_usr">API ClientID:</label> <input name="pp_cid" value="{$this->icfg.pp_cid|escape}" type="text"></p>
+<p><label for="pp_pwd">API Secret:</label> <input name="pp_pwd" value="{$this->icfg.pp_pwd|escape}" type="password"></p>
 </fieldset>
 
 <fieldset>

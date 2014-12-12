@@ -5,7 +5,7 @@ require __DIR__ . '/vendor/paypal/rest-api-sdk-php/sample/invoice/CreateInvoice.
 	class paypal_slack extends SlackServicePlugin {
 
 		public $name = " PayPal Slack";
-		public $desc = "Get payment notifications, send and request money securely.";
+		public $desc = "Get payment notifications, and request money securely.";
 		public $tooltip = "Connect your PayPal account to your slack group so you can manage your PayPal Account securely";
 
 		public $cfg = array(
@@ -39,9 +39,9 @@ require __DIR__ . '/vendor/paypal/rest-api-sdk-php/sample/invoice/CreateInvoice.
 
 				$this->icfg['channel'] = $_POST['channel'];
 				$this->icfg['channel_name'] = $channels[$_POST['channel']];
-				$this->icfg['pp_usr'] = $_POST['pp_usr'];
+				$this->icfg['pp_act'] = $_POST['pp_act'];
+				$this->icfg['pp_cid'] = $_POST['pp_cid'];
 				$this->icfg['pp_pwd'] = $_POST['pp_pwd'];
-				$this->icfg['pp_sig'] = $_POST['pp_sig'];
 				$this->icfg['botname'] = $_POST['botname'];
 				$this->saveConfig();
 
@@ -65,7 +65,9 @@ require __DIR__ . '/vendor/paypal/rest-api-sdk-php/sample/invoice/CreateInvoice.
 				);
 			}
 
-			$this->sendMessage("HOOK!!! \n". foo() . $this->escapeText(http_build_query($req['post'])));
+			$invoice = createInvoice($this->icfg['pp_cid'],$this->icfg['pp_pwd']);
+
+			$this->sendMessage("HOOK!!! \n");
 			//$this->sendMessage());
 			return array(
 				'ok'		=> true,
@@ -163,7 +165,7 @@ require __DIR__ . '/vendor/paypal/rest-api-sdk-php/sample/invoice/CreateInvoice.
 		}
 
 		function getLabel(){
-			return "Post commits to {$this->icfg['channel_name']} as {$this->icfg['botname']}";
+			return "Post notification to {$this->icfg['channel_name']} as {$this->icfg['botname']}";
 		}
 
 		private function sendMessage($text){
