@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . './vendor/paypal/rest-api-sdk-php/sample/invoice/CreateInvoice.php';
+require __DIR__ . '/vendor/paypal/rest-api-sdk-php/sample/invoice/CreateInvoice.php';
 
 	class paypal_slack extends SlackServicePlugin {
 
