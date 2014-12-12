@@ -1,12 +1,24 @@
 # The PayPal+Slack extension
+A [PayPal](https://developer.paypal.com) integration for [Slack](http://slack.com)
+
+## Supports the following:
+* Display Sales Notifications. Can be split between two channels (eg: sales / fulfillment). Now you can know right away when you make a sale!
+* Creating / Sending invoices via slash command, using a natural language: `/paypal invoice lenny@msn.com 10.99 for Bananas`
+* Providing support options via slash command: `/paypal support`
+
+## Disclaimer:
+This is hackathon code, built under 20 hours. Expect brittleness.
 
 
+
+
+### Some notes for my own benefit
 What I've done so far:
 
-Configure Apache on my mac:  https://discussions.apple.com/docs/DOC-3083
-Install hammock: https://github.com/tinyspeck/hammock
-Register a new slack application: https://api.slack.com/applications
-Change hammock configuration `lib/config.php` as follows:
+* Configure Apache on my mac:  https://discussions.apple.com/docs/DOC-3083
+* Install hammock: https://github.com/tinyspeck/hammock
+* Register a new slack application: https://api.slack.com/applications
+* Change hammock configuration `lib/config.php` as follows:
 
 ```
 
@@ -29,5 +41,20 @@ Change hammock configuration `lib/config.php` as follows:
         $cfg['cookie_domain'] = '127.0.0.1';
 
 ```
+* Create boilerplate plugin, and start modifying it for PayPal.
+* 
+* Dropped in PayPal Logos in various sizes for displays.
 
-Probably need to turn off warnings in PHP due to some minor version incompatibilities....
+* Installed PayPal php REST sdk
+
+* Added basic support for IPN
+
+* Added Support for slash commands:
+	- invoice
+	- support
+	- help
+
+* Need to find out from Slack support how to deploy commands upon installation.
+	
+* Added mutichannel support
+* 
