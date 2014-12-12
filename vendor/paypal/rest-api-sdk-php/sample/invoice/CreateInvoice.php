@@ -19,7 +19,7 @@ function foo(){
   return "foo";
 }
 
-function createInvoice($clientId, $clientSecret)
+function createInvoice($invoiceData,$clientId, $clientSecret)
 {
 
 
@@ -41,16 +41,16 @@ function createInvoice($clientId, $clientSecret)
         ->setMerchantInfo(new MerchantInfo())
         ->setBillingInfo(array(new BillingInfo()))
         ->setItems(array(new InvoiceItem()))
-        ->setNote("Medical Invoice 16 Jul, 2013 PST")
-        ->setPaymentTerm(new PaymentTerm())
-        ->setShippingInfo(new ShippingInfo());
+        ->setNote($invoiceData["note"])
+        ->setPaymentTerm(new PaymentTerm());
+       // ->setShippingInfo(new ShippingInfo());
 
 // ### Merchant Info
 // A resource representing merchant information that can be
 // used to identify merchant
     $invoice->getMerchantInfo()
-        ->setEmail("lmarkus-facilitator@paypal.com")
-        ->setFirstName("Dennis")
+        ->setEmail($invoiceData["from"]);
+       /* ->setFirstName("Dennis")
         ->setLastName("Doctor")
         ->setbusinessName("Medical Professionals, LLC")
         ->setPhone(new Phone())
@@ -68,29 +68,30 @@ function createInvoice($clientId, $clientSecret)
         ->setState("OR")
         ->setPostalCode("97217")
         ->setCountryCode("US");
-
+         */
 // ### Billing Information
 // Set the email address for each billing
     $billing = $invoice->getBillingInfo();
     $billing[0]
-        ->setEmail("example@example.com");
+        ->setEmail($invoiceData["to"]);
+
 
 // ### Items List
 // You could provide the list of all items for
 // detailed breakdown of invoice
     $items = $invoice->getItems();
     $items[0]
-        ->setName("Sutures")
-        ->setQuantity(100)
+        ->setName($invoiceData['note'])
+        ->setQuantity(1)
         ->setUnitPrice(new Currency());
 
     $items[0]->getUnitPrice()
         ->setCurrency("USD")
-        ->setValue(5);
+        ->setValue($invoiceData['amount']);
 
     $invoice->getPaymentTerm()
         ->setTermType("NET_45");
-
+    /*
 // ### Shipping Information
     $invoice->getShippingInfo()
         ->setFirstName("Sally")
@@ -109,20 +110,25 @@ function createInvoice($clientId, $clientSecret)
         ->setState("OR")
         ->setPostalCode("97217")
         ->setCountryCode("US");
-
+            */
 // For Sample Purposes Only.
     $request = clone $invoice;
+    $status = "none";
 
     try {
         // ### Create Invoice
         // Create an invoice by calling the invoice->create() method
         // with a valid ApiContext (See bootstrap.php for more on `ApiContext`)
         $invoice->create($apiContext);
+        $status = $invoice->send($apiContext);
+        printf("THE STATUS ".$status);
     } catch (Exception $ex) {
+        printf("ERR THE STATUS ");
+
         ResultPrinter::printError("Create Invoice", "Invoice", null, $request, $ex);
         exit(1);
     }
-
+      printf("Good!".$status);
     ResultPrinter::printResult("Create Invoice", "Invoice", $invoice->getId(), $request, $invoice);
 
     return $invoice;

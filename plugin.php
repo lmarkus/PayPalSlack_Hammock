@@ -2,203 +2,162 @@
 
 require __DIR__ . '/vendor/paypal/rest-api-sdk-php/sample/invoice/CreateInvoice.php';
 
-	class paypal_slack extends SlackServicePlugin {
+class paypal_slack extends SlackServicePlugin
+{
 
-		public $name = " PayPal Slack";
-		public $desc = "Get payment notifications, and request money securely.";
-		public $tooltip = "Connect your PayPal account to your slack group so you can manage your PayPal Account securely";
+    public $name = " PayPal Slack";
+    public $desc = "Get payment notifications, and request money securely.";
+    public $tooltip = "Connect your PayPal account to your slack group so you can manage your PayPal Account securely";
 
-		public $cfg = array(
-			'has_token'	=> true,
-		);
+    public $cfg = array(
+        'has_token' => true,
+    );
 
-		function onInit(){
+    function onInit()
+    {
 
-			$channels = $this->getChannelsList();
-			foreach ($channels as $k => $v){
-				if ($v == '#general'){
-					$this->icfg['channel'] = $k;
-					$this->icfg['channel_name'] = $v;
-				}
-			}
+        $channels = $this->getChannelsList();
+        foreach ($channels as $k => $v) {
+            if ($v == '#general') {
+                $this->icfg['channel'] = $k;
+                $this->icfg['channel_name'] = $v;
+            }
+        }
 
-			$this->icfg['branch']	= '';
-			$this->icfg['botname']	= 'PayPalBot';
-		}
+        $this->icfg['branch'] = '';
+        $this->icfg['botname'] = 'PayPalBot';
+    }
 
-		function onView(){
+    function onView()
+    {
 
-			return $this->smarty->fetch('view.txt');
-		}
+        return $this->smarty->fetch('view.txt');
+    }
 
-		function onEdit(){
+    function onEdit()
+    {
 
-			$channels = $this->getChannelsList();
+        $channels = $this->getChannelsList();
 
-			if ($_GET['save']){
+        if ($_GET['save']) {
 
-				$this->icfg['channel'] = $_POST['channel'];
-				$this->icfg['channel_name'] = $channels[$_POST['channel']];
-				$this->icfg['pp_act'] = $_POST['pp_act'];
-				$this->icfg['pp_cid'] = $_POST['pp_cid'];
-				$this->icfg['pp_pwd'] = $_POST['pp_pwd'];
-				$this->icfg['botname'] = $_POST['botname'];
-				$this->saveConfig();
+            $this->icfg['channel'] = $_POST['channel'];
+            $this->icfg['channel_name'] = $channels[$_POST['channel']];
+            $this->icfg['pp_act'] = $_POST['pp_act'];
+            $this->icfg['pp_cid'] = $_POST['pp_cid'];
+            $this->icfg['pp_pwd'] = $_POST['pp_pwd'];
+            $this->icfg['botname'] = $_POST['botname'];
+            $this->saveConfig();
 
-				header("location: {$this->getViewUrl()}&saved=1");
-				exit;
-			}
+            header("location: {$this->getViewUrl()}&saved=1");
+            exit;
+        }
 
-			$this->smarty->assign('channels', $channels);
+        $this->smarty->assign('channels', $channels);
 
-			return $this->smarty->fetch('edit.txt');
-		}
-
-
-		//Where the incoming magic happens!
-		function onHook($req){
-
-			$in = $req['post'];
-			if (!$this->icfg['channel']){
-				return array(
-					'ok'	=> false,
-					'error'	=> "No channel configured",
-				);
-			}
+        return $this->smarty->fetch('edit.txt');
+    }
 
 
-			$invoice['from'] = $in['user_name'];
-			$text = explode(' ',$in['text']);
-			$invoice['command'] = $text[0];
-			$invoice['to'] = $text[1];
-			$invoice['amount'] = $text[2];
+    //Where the incoming magic happens!
+    function onHook($req)
+    {
 
-			//All remaining elements make up the invoice
-			$note = "";
-			for($i = 3; $i < sizeof($text); $i++){
-				$note = $note. ' '.$text[$i];
-			}
+        $in = $req['post'];
+        if (!$this->icfg['channel']) {
+            return array(
+                'ok' => false,
+                'error' => "No channel configured",
+            );
+        }
 
-			$invoice['note']= $note;
+        //Slack incoming command
+        if ($in['user_name']) {
 
-			$this->sendMessage("Hi ".$invoice['from'].". I'm going to request $".$invoice['amount']." from ".$invoice['to']." for:\n".$note);
+            $requester = $in['user_name'];
+            $invoice['from'] = $this->icfg['pp_act'];
+            $text = explode(' ', $in['text']);
+            $command = $text[0];
+            $invoice['to'] = $text[1];
+            $invoice['amount'] = $text[2];
 
+            //All remaining elements make up the invoice
+            $note = "";
+            for ($i = 3; $i < sizeof($text); $i++) {
+                $note = $note . ' ' . $text[$i];
+            }
 
+            $invoice['note'] = $note;
 
+            switch ($command) {
+                case "invoice" : {
+                    $this->sendMessage("Hi " . $requester . ". I'm going to request $" . $invoice['amount'] . " from " . $invoice['to'] . " for:\n" . $note);
+                    $createdInvoice = createInvoice($invoice, $this->icfg['pp_cid'], $this->icfg['pp_pwd']);
+                    $this->sendMessage("Invoice #" . $createdInvoice->getId() . " Created and Sent");
 
-			$invoice = createInvoice($this->icfg['pp_cid'],$this->icfg['pp_pwd']);
+                    //$this->sendMessage());
+                    return array(
+                        'ok' => true,
+                        'status' => "Nothing found to report",
+                    );
+                }
+                case "support" : {
+                    $this->sendMessage("Hi " . $requester . ". We are here to help you 24/7!!! :ambulance:\n" .
+                        "> If you need to reach a human, please call: `1 (888) 221-1161`\n".
+                        "> If you need file a ticket visit: `https://www.paypal.com/mts`\n".
+                        "You can also give us a shout out on Twitter @PayPal");
 
-			$this->sendMessage("HOOK!!! \n");
-			//$this->sendMessage());
-			return array(
-				'ok'		=> true,
-				'status'	=> "Nothing found to report",
-			);
+                }
 
-			$github_payload = json_decode($req['post']['payload'], true);
+                case "help" :
+                default :
+                {
 
-			if (!$github_payload || !is_array($github_payload)){
-				return array(
-					'ok'	=> false,
-					'error' => "No payload received from github",
-				);
-			}
+                    $this->sendMessage(
+                        "Welcome to the PayPal Bot. Here's what I can help you with so far:\n".
+                        "*invoice* Sends a request for money. Use: `/invoice receiver@email.com amount note`\n".
+                        "*support* Shows you all the ways you can contact us when you need help\n".
+                        "*help* Shows this helpful menu`\n"
+                    );
 
+                }
+            }
+        } else {
 
-			#
-			# branch filtering
-			#
+            $message = ":moneybag:Ka-Ching!:moneybag: You just made a sale!\n" .
+                "You sold " . $in['item_name1'] . " for " . $in['mc_currency'] . $in['mc_gross'] . "\n" .
+                "Please dispatch it to: \n" .
+                "```\n" .
+                $in['address_name'] . "\n" .
+                $in['address_street'] . "\n" .
+                $in['address_city'] . ", " . $in['address_state'] . " " . $in['address_zip'] . "\n" .
+                $in['address_country'] . "\n```";
 
-			$filter_branches = $this->icfg['branch'] ? explode(',', $this->icfg['branch']) : array();
+            $this->sendMessage($message);
 
-			if ($github_payload['base_ref']){
+            return array(
+                'ok' => true,
+                'status' => "Nothing found to report",
+            );
+        }
+    }
 
-				$ref_parts = explode('/', $github_payload['ref']);
-				$base_ref_parts = explode('/', $github_payload['base_ref']);
-				$branch = array_pop($base_ref_parts);
-			}else{
-				$ref_parts = explode('/', $github_payload['ref']);
-				$branch = array_pop($ref_parts);
-			}
+    function getLabel()
+    {
+        return "Post notification to {$this->icfg['channel_name']} as {$this->icfg['botname']}";
+    }
 
-			if (count($filter_branches) && !in_array($branch, $filter_branches)){
-				return array(
-					'ok'		=> true,
-					'status'	=> "Commit not in tracked branch (in {$branch}, showing {$this->icfg['branch']})",
-				);
-			}
+    private function sendMessage($text)
+    {
 
+        $ret = $this->postToChannel($text, array(
+            'channel' => $this->icfg['channel'],
+            'username' => $this->icfg['botname'],
+        ));
 
-			#
-			# send some messages
-			#
-
-			if ($ref_parts[1] == "tags"){
-
-				$text  = $this->escapeText("[{$github_payload['repository']['name']}/{$branch}] ");
-				$text .= $this->escapeText("{$github_payload['pusher']['name']} pushed tag ");
-				$text .= $this->escapeLink($github_payload['compare'], "{$ref_parts[2]}");
-
-				return $this->sendMessage($text);
-			}
-
-			$commit_count = count($github_payload['commits']);
-
-			if ($commit_count > 1){
-
-				$text = $this->escapeText("[{$github_payload['repository']['name']}/{$branch}] $commit_count new commits:");
-
-				$i = 0;
-				foreach ($github_payload['commits'] as $commit){
-					$short_sha = substr($commit['id'], 0, 12);
-
-					$text .= $this->escapeText("\n[{$github_payload['repository']['name']}/{$branch}] ");
-					$text .= $this->escapeLink($commit['url'], "{$short_sha}");
-					$text .= $this->escapeText(": {$commit['message']} - {$commit['author']['name']}");
-					
-					$i++;
-					if ($i == 10 && ($commit_count-$i)>1) break;
-				}
-
-				if ($i != $commit_count){
-					$text .= "\nAnd ".$this->escapeLink($github_payload['compare'], ($commit_count-$i)." others");
-				}
-
-				return $this->sendMessage($text);
-			}
-
-			if ($commit_count){
-
-				$commit = $github_payload['commits'][0];
-				$short_sha = substr($commit['id'], 0, 12);
-
-				$text .= $this->escapeText("[{$github_payload['repository']['name']}/{$branch}] ");
-				$text .= $this->escapeLink($commit['url'], "{$short_sha}");
-				$text .= $this->escapeText(": {$commit['message']} - {$commit['author']['name']}");
-
-				return $this->sendMessage($text);
-			}
-
-			return array(
-				'ok'		=> true,
-				'status'	=> "Nothing found to report",
-			);
-		}
-
-		function getLabel(){
-			return "Post notification to {$this->icfg['channel_name']} as {$this->icfg['botname']}";
-		}
-
-		private function sendMessage($text){
-
-			$ret = $this->postToChannel($text, array(
-                                'channel'       => $this->icfg['channel'],
-                                'username'      => $this->icfg['botname'],
-                        ));
-
-			return array(
-				'ok'		=> true,
-				'status'	=> "Sent a message",
-			);
-		}
-	}
+        return array(
+            'ok' => true,
+            'status' => "Sent a message",
+        );
+    }
+}
