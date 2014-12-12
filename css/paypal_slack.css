@@ -1,0 +1,47 @@
+#ppSlack fieldset {
+    border:solid 1px #999;
+    border-radius: 3px;
+}
+
+#ppSlack legend {
+    font-weight: bold;
+}
+
+#ppSlack fieldset p {
+    font-weight: 300;
+    margin: .25em 0;
+    display: table;
+
+}
+
+#ppSlack span.pp_tiny {
+
+    background: #fafafa;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 0.75em;
+    padding: 5px;
+
+}
+
+#ppSlack label {
+    box-sizing: border-box;
+    display: table-cell;
+    width:150px;
+    font-width: 300;
+
+}
+
+#ppSlack span {
+    display: table-cell;
+    font-weight: 200;
+}
+
+#ppSlack input {
+    box-sizing: border-box;
+    display:table-cell;
+    min-width: 250px;
+    border: solid 1px #999;
+    border-radius: 3px;
+    padding: 3px;
+}

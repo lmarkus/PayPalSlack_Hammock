@@ -1,0 +1,44 @@
+{literal}
+<script language="javascript" type="text/javascript">
+<!--
+function popitup(url) {
+	var newwindow=window.open(url,'name','height=420,width=300');
+	if (window.focus) {newwindow.focus()}
+	return false;
+}
+
+// -->
+</script>
+{/literal}
+<link rel="stylesheet" href="plugins/paypal_slack/css/paypal_slack.css">
+
+<form action="{$this->getEditUrl()}&save=1" method="post">
+
+<div id="ppSlack">
+
+<fieldset>
+<legend>PayPal API Credentials</legend>
+<span class="pp_tiny">
+	Click here to <a href="javascript:void(0)" onclick="popitup('https://www.paypal.com/us/cgi-bin/webscr?cmd=_get-api-signature')"> obtain your API credentials</a>
+</span>
+<p><label for="pp_usr">API Username:</label> <input name="pp_usr" value="{$this->icfg.pp_usr|escape}" type="text"></p>
+<p><label for="pp_pwd">API Password:</label> <input name="pp_pwd" value="{$this->icfg.pp_pwd|escape}" type="password"></p>
+<p><label for="pp_sig">API Signature:</label> <input name="pp_sig" value="{$this->icfg.pp_sig|escape}" type="password"></p>
+</fieldset>
+
+<fieldset>
+<legend>Slack Settings</legend>
+<p><label>Post notifications to:</label> <select name="channel">
+{foreach from=$channels key='chan_id' item='chan_name'}
+	<option value="{$chan_id|escape}"{if $chan_id==$this->icfg.channel} selected{/if}>{$chan_name|escape}</option>
+{/foreach}
+</select></p>
+
+
+<p><label>Bot name: </label><input type="text" name="botname" value="{$this->icfg.botname|escape}" /></p>
+</fieldset>
+
+</div>
+
+<p><input type="submit" value="Save Changes" class="btn" /></p>
+</form>

@@ -1,0 +1,34 @@
+<link rel="stylesheet" href="plugins/paypal_slack/css/paypal_slack.css">
+
+
+{if $smarty.get.newtoken}
+
+	<p class="alert">Your token has been updated - the webhook URL has changed!</p>
+{/if}
+
+
+<p>Welcome to the PayPal+Slack configuration page. You can change your settings from this page.<br>
+Your current configuration is below:</p>
+
+<div id="ppSlack">
+
+<fieldset>
+<legend>PayPal API Credentials</legend>
+<p><label>API Username:</label> <span>{$this->icfg.pp_usr|escape}<span></p>
+<p><label>API Password:</label> <span>Hidden<span></p>
+<p><label>API Signature:</label> <span>Hidden<span></p>
+</fieldset>
+
+<fieldset>
+<legend>Slack Settings</legend>
+<p><label>Post to channel:</label> <span>{$this->icfg.channel_name|escape}</span></p>
+<p><label>Bot Name:</label> <span>{$this->icfg.botname|escape}</span></p>
+</fieldset>
+
+</div>
+
+
+<p>Service hook: <code>{$this->getHookUrl()}</code></p>
+
+
+<p><a href="{$this->getEditUrl()}" class="btn">Edit settings</a></p>
