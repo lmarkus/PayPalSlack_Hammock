@@ -72,7 +72,7 @@ class paypal_slack extends SlackServicePlugin
         }
 
         //Slack incoming command
-        if ($in['user_name']) {
+        if (!is_null($in['user_name'])) {
 
             $requester = $in['user_name'];
             $invoice['from'] = $this->icfg['pp_act'];
@@ -100,24 +100,23 @@ class paypal_slack extends SlackServicePlugin
                         'ok' => true,
                         'status' => "Nothing found to report",
                     );
-                }
+                } break;
                 case "support" : {
                     $this->sendMessage("Hi " . $requester . ". We are here to help you 24/7!!! :ambulance:\n" .
                         "> If you need to reach a human, please call: `1 (888) 221-1161`\n".
                         "> If you need file a ticket visit: `https://www.paypal.com/mts`\n".
                         "You can also give us a shout out on Twitter @PayPal");
 
-                }
-
+                } break;
                 case "help" :
                 default :
                 {
 
                     $this->sendMessage(
                         "Welcome to the PayPal Bot. Here's what I can help you with so far:\n".
-                        "*invoice* Sends a request for money. Use: `/invoice receiver@email.com amount note`\n".
-                        "*support* Shows you all the ways you can contact us when you need help\n".
-                        "*help* Shows this helpful menu`\n"
+                        "*invoice*: Sends a request for money. Use: `invoice receiver@email.com amount note`\n".
+                        "*support*: Shows you all the ways you can contact us when you need help\n".
+                        "*help*: Shows this helpful menu`\n"
                     );
 
                 }
