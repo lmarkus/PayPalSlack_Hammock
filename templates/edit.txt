@@ -28,7 +28,12 @@ function popitup(url) {
 
 <fieldset>
 <legend>Slack Settings</legend>
-<p><label>Post notifications to:</label> <select name="channel">
+<p><label>Post sale messages:</label> <select name="sales_channel">
+{foreach from=$channels key='chan_id' item='chan_name'}
+	<option value="{$chan_id|escape}"{if $chan_id==$this->icfg.channel} selected{/if}>{$chan_name|escape}</option>
+{/foreach}
+</select></p>
+<p><label>Post shipping messages:</label> <select name="shipping_channel">
 {foreach from=$channels key='chan_id' item='chan_name'}
 	<option value="{$chan_id|escape}"{if $chan_id==$this->icfg.channel} selected{/if}>{$chan_name|escape}</option>
 {/foreach}

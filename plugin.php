@@ -41,8 +41,10 @@ class paypal_slack extends SlackServicePlugin
 
         if ($_GET['save']) {
 
-            $this->icfg['channel'] = $_POST['channel'];
-            $this->icfg['channel_name'] = $channels[$_POST['channel']];
+            $this->icfg['sales_channel'] = $_POST['sales_channel'];
+            $this->icfg['sales_channel_name'] = $channels[$_POST['sales_channel']];
+            $this->icfg['shipping_channel'] = $_POST['shipping_channel'];
+            $this->icfg['shipping_channel_name'] = $channels[$_POST['shipping_channel']];
             $this->icfg['pp_act'] = $_POST['pp_act'];
             $this->icfg['pp_cid'] = $_POST['pp_cid'];
             $this->icfg['pp_pwd'] = $_POST['pp_pwd'];
@@ -64,7 +66,7 @@ class paypal_slack extends SlackServicePlugin
     {
 
         $in = $req['post'];
-        if (!$this->icfg['channel']) {
+        if (!$this->icfg['sales_channel']) {
             return array(
                 'ok' => false,
                 'error' => "No channel configured",
@@ -91,9 +93,11 @@ class paypal_slack extends SlackServicePlugin
 
             switch ($command) {
                 case "invoice" : {
-                    $this->sendMessage("Hi " . $requester . ". I'm going to request $" . $invoice['amount'] . " from " . $invoice['to'] . " for:\n" . $note);
+                    $this->sendMessage("Hi " . $requester . ". I'm going to request $" . $invoice['amount'] . " from " . $invoice['to'] . " for:\n" . $note,
+                        $this->icfg['sales_channel']);
                     $createdInvoice = createInvoice($invoice, $this->icfg['pp_cid'], $this->icfg['pp_pwd']);
-                    $this->sendMessage("Invoice #" . $createdInvoice->getId() . " Created and Sent");
+                    $this->sendMessage("Invoice #" . $createdInvoice->getId() . " Created and Sent",
+                        $this->icfg['sales_channel']);
 
                     //$this->sendMessage());
                     return array(
@@ -105,7 +109,8 @@ class paypal_slack extends SlackServicePlugin
                     $this->sendMessage("Hi " . $requester . ". We are here to help you 24/7!!! :ambulance:\n" .
                         "> If you need to reach a human, please call: `1 (888) 221-1161`\n".
                         "> If you need file a ticket visit: `https://www.paypal.com/mts`\n".
-                        "You can also give us a shout out on Twitter @PayPal");
+                        "You can also give us a shout out on Twitter @PayPal",
+                        $this->icfg['sales_channel']);
 
                 } break;
                 case "help" :
@@ -116,23 +121,26 @@ class paypal_slack extends SlackServicePlugin
                         "Welcome to the PayPal Bot. Here's what I can help you with so far:\n".
                         "*invoice*: Sends a request for money. Use: `invoice receiver@email.com amount note`\n".
                         "*support*: Shows you all the ways you can contact us when you need help\n".
-                        "*help*: Shows this helpful menu`\n"
-                    );
+                        "*help*: Shows this helpful menu`\n",
+                    $this->icfg['sales_channel']);
 
                 }
             }
         } else {
 
-            $message = ":moneybag:Ka-Ching!:moneybag: You just made a sale!\n" .
+            $sale = ":moneybag:Ka-Ching!:moneybag: You just made a sale!\n" .
                 "You sold " . $in['item_name1'] . " for " . $in['mc_currency'] . $in['mc_gross'] . "\n" .
-                "Please dispatch it to: \n" .
+                "Shipping has been notified. \n";
+
+            $shipping =  "Please dispatch ".$in['item_name1'] ." to \n" .
                 "```\n" .
                 $in['address_name'] . "\n" .
                 $in['address_street'] . "\n" .
                 $in['address_city'] . ", " . $in['address_state'] . " " . $in['address_zip'] . "\n" .
                 $in['address_country'] . "\n```";
 
-            $this->sendMessage($message);
+            $this->sendMessage($sale,$this->icfg['sales_channel']);
+            $this->sendMessage($shipping,$this->icfg['shipping_channel']);
 
             return array(
                 'ok' => true,
@@ -146,11 +154,11 @@ class paypal_slack extends SlackServicePlugin
         return "Post notification to {$this->icfg['channel_name']} as {$this->icfg['botname']}";
     }
 
-    private function sendMessage($text)
+    private function sendMessage($text,$channel)
     {
 
         $ret = $this->postToChannel($text, array(
-            'channel' => $this->icfg['channel'],
+            'channel' => $channel,
             'username' => $this->icfg['botname'],
         ));
 

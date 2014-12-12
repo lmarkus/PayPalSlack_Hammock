@@ -21,7 +21,8 @@ Your current configuration is below:</p>
 
 <fieldset>
 <legend>Slack Settings</legend>
-<p><label>Post to channel:</label> <span>{$this->icfg.channel_name|escape}</span></p>
+<p><label>Sales messages:</label> <span>{$this->icfg.sales_channel_name|escape}</span></p>
+<p><label>Shipping messages:</label> <span>{$this->icfg.shipping_channel_name|escape}</span></p>
 <p><label>Bot Name:</label> <span>{$this->icfg.botname|escape}</span></p>
 </fieldset>
 
