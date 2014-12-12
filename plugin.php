@@ -58,12 +58,33 @@ require __DIR__ . '/vendor/paypal/rest-api-sdk-php/sample/invoice/CreateInvoice.
 		//Where the incoming magic happens!
 		function onHook($req){
 
+			$in = $req['post'];
 			if (!$this->icfg['channel']){
 				return array(
 					'ok'	=> false,
 					'error'	=> "No channel configured",
 				);
 			}
+
+
+			$invoice['from'] = $in['user_name'];
+			$text = explode(' ',$in['text']);
+			$invoice['command'] = $text[0];
+			$invoice['to'] = $text[1];
+			$invoice['amount'] = $text[2];
+
+			//All remaining elements make up the invoice
+			$note = "";
+			for($i = 3; $i < sizeof($text); $i++){
+				$note = $note. ' '.$text[$i];
+			}
+
+			$invoice['note']= $note;
+
+			printf($invoice);
+
+
+
 
 			$invoice = createInvoice($this->icfg['pp_cid'],$this->icfg['pp_pwd']);
 
