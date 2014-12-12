@@ -21,7 +21,7 @@
 			}
 
 			$this->icfg['branch']	= '';
-			$this->icfg['botname']	= 'MoneyBot';
+			$this->icfg['botname']	= 'PayPalBot';
 		}
 
 		function onView(){
