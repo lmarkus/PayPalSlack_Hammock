@@ -15,6 +15,10 @@ use PayPal\Api\Currency;
 use PayPal\Api\PaymentTerm;
 use PayPal\Api\ShippingInfo;
 
+function foo(){
+  return "foo";
+}
+
 $invoice = new Invoice();
 
 // ### Invoice Info

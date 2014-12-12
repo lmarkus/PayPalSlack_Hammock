@@ -1,5 +1,7 @@
 <?php
 
+require __DIR__ . './vendor/paypal/rest-api-sdk-php/sample/invoice/CreateInvoice.php';
+
 	class paypal_slack extends SlackServicePlugin {
 
 		public $name = " PayPal Slack";
@@ -63,7 +65,7 @@
 				);
 			}
 
-			$this->sendMessage("HOOK!!! \n" . $this->escapeText(http_build_query($req['post'])));
+			$this->sendMessage("HOOK!!! \n". foo() . $this->escapeText(http_build_query($req['post'])));
 			//$this->sendMessage());
 			return array(
 				'ok'		=> true,
